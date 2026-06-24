@@ -1,0 +1,15 @@
+# .env
+# node_modules/
+# package-lock.json
+# dist/
+# tsconfig.tsbuildinfo
+# uploads/
+
+
+.env
+node_modules/
+package-lock.json
+dist/
+tsconfig.tsbuildinfo
+uploads/
+src/config/firebase-service-account.json

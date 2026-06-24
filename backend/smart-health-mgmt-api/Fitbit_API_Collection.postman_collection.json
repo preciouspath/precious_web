@@ -1,0 +1,225 @@
+{
+  "info": {
+    "_postman_id": "fitbit-smart-health-collection",
+    "name": "Smart Health — Fitbit Integration API",
+    "description": "Complete Fitbit OAuth 2.0 integration API collection for the Smart Health Management platform.\n\n## Flow:\n1. Call **Get Auth URL** → open the URL in browser\n2. After Fitbit consent, the app receives a redirect with `?code=...`\n3. Call **Callback** with the code → tokens are stored\n4. Call **Sync Data** to fetch latest health data\n5. Call **Status** to check connection state\n6. Call **Disconnect** to remove Fitbit connection\n\n## Setup:\n- Set `baseUrl` variable to your backend URL\n- Set `accessToken` variable to a valid JWT token from login",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string",
+      "description": "JWT access token from patient login"
+    }
+  ],
+  "item": [
+    {
+      "name": "Fitbit Integration",
+      "description": "All Fitbit OAuth 2.0 and data sync endpoints",
+      "item": [
+        {
+          "name": "1. Get Fitbit Auth URL",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/fitbit/auth-url",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "fitbit", "auth-url"]
+            },
+            "description": "Generate the Fitbit OAuth 2.0 authorization URL.\n\nThe mobile app should open the returned `authorizationUrl` in a browser or WebView.\nAfter user consent, Fitbit redirects to `smarthealth://oauthredirect?code=AUTHORIZATION_CODE&state=STATE`.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Fitbit authorization URL generated successfully\",\n  \"data\": {\n    \"authorizationUrl\": \"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=23V3DZ&...\",\n    \"state\": \"random_csrf_state_string\"\n  }\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitbit authorization URL generated successfully\",\n  \"data\": {\n    \"authorizationUrl\": \"https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=23V3DZ&redirect_uri=smarthealth%3A%2F%2Foauthredirect&scope=activity+heartrate+sleep+oxygen_saturation+profile&state=a1b2c3d4e5f6&prompt=login+consent\",\n    \"state\": \"a1b2c3d4e5f6\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Fitbit OAuth Callback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PASTE_AUTHORIZATION_CODE_HERE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/fitbit/callback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "fitbit", "callback"]
+            },
+            "description": "Exchange the authorization code (received after user consent) for access + refresh tokens.\n\nThe app should extract the `code` parameter from the Fitbit redirect URL:\n`smarthealth://oauthredirect?code=AUTHORIZATION_CODE&state=STATE`\n\n**Request Body:**\n```json\n{\n  \"code\": \"authorization_code_from_fitbit_redirect\"\n}\n```\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Fitbit connected successfully\",\n  \"data\": {\n    \"fitbitUserId\": \"ABC123\",\n    \"connectedScopes\": \"activity heartrate sleep oxygen_saturation profile\",\n    \"smartwatch\": {\n      \"connected\": true,\n      \"type\": \"Fitbit\"\n    }\n  }\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitbit connected successfully\",\n  \"data\": {\n    \"fitbitUserId\": \"ABC123\",\n    \"connectedScopes\": \"activity heartrate sleep oxygen_saturation profile\",\n    \"smartwatch\": {\n      \"connected\": true,\n      \"type\": \"Fitbit\"\n    }\n  }\n}"
+            },
+            {
+              "name": "Missing Code",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Authorization code is required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Sync Fitbit Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/fitbit/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "fitbit", "sync"]
+            },
+            "description": "Fetch the latest health data from Fitbit and update the user's health profile.\n\nAutomatically refreshes expired access tokens.\nPushes real-time data to the web dashboard via WebSocket.\n\n**Request Body (optional):**\n```json\n{\n  \"date\": \"2026-04-15\"  // Optional: specific date (YYYY-MM-DD). Defaults to today.\n}\n```\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Fitbit data synced successfully\",\n  \"data\": {\n    \"heartRate\": \"72\",\n    \"steps\": \"8543\",\n    \"sleep\": \"7.5\",\n    \"bloodOxygen\": \"97\",\n    \"bloodPressure\": \"--/--\",\n    \"lastSync\": \"2026-04-15T10:00:00.000Z\",\n    \"source\": \"Fitbit\"\n  }\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitbit data synced successfully\",\n  \"data\": {\n    \"heartRate\": \"72\",\n    \"steps\": \"8543\",\n    \"sleep\": \"7.5\",\n    \"bloodOxygen\": \"97\",\n    \"bloodPressure\": \"--/--\",\n    \"lastSync\": \"2026-04-15T10:00:00.000Z\",\n    \"source\": \"Fitbit\"\n  }\n}"
+            },
+            {
+              "name": "Not Connected",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Fitbit is not connected. Please connect your Fitbit account first.\"\n}"
+            },
+            {
+              "name": "Session Expired",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Fitbit session expired. Please reconnect your Fitbit account.\",\n  \"requiresReconnect\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Get Fitbit Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/fitbit/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "fitbit", "status"]
+            },
+            "description": "Check the current Fitbit connection status for the authenticated user.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"connected\": true,\n    \"type\": \"Fitbit\",\n    \"fitbitUserId\": \"ABC123\",\n    \"scope\": \"activity heartrate sleep oxygen_saturation profile\",\n    \"lastSync\": \"2026-04-15T10:00:00.000Z\",\n    \"tokenExpired\": false,\n    \"smartwatchData\": {\n      \"heartRate\": \"72\",\n      \"steps\": \"8543\",\n      \"sleep\": \"7.5\",\n      \"bloodOxygen\": \"97\",\n      \"bloodPressure\": \"--/--\"\n    }\n  }\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Connected",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"connected\": true,\n    \"type\": \"Fitbit\",\n    \"fitbitUserId\": \"ABC123\",\n    \"scope\": \"activity heartrate sleep oxygen_saturation profile\",\n    \"lastSync\": \"2026-04-15T10:00:00.000Z\",\n    \"tokenExpired\": false,\n    \"smartwatchData\": {\n      \"heartRate\": \"72\",\n      \"steps\": \"8543\",\n      \"sleep\": \"7.5\",\n      \"bloodOxygen\": \"97\",\n      \"bloodPressure\": \"--/--\"\n    }\n  }\n}"
+            },
+            {
+              "name": "Not Connected",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"connected\": false,\n    \"type\": null,\n    \"fitbitUserId\": null,\n    \"scope\": null,\n    \"lastSync\": null,\n    \"tokenExpired\": null,\n    \"smartwatchData\": null\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Disconnect Fitbit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/fitbit/disconnect",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "fitbit", "disconnect"]
+            },
+            "description": "Disconnect the Fitbit account from the user's profile.\nClears all stored tokens and marks smartwatch as disconnected.\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Fitbit disconnected successfully\",\n  \"data\": {\n    \"connected\": false,\n    \"type\": null\n  }\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Fitbit disconnected successfully\",\n  \"data\": {\n    \"connected\": false,\n    \"type\": null\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

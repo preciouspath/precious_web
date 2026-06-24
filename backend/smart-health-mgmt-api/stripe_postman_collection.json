@@ -1,0 +1,226 @@
+{
+  "info": {
+    "name": "Smart Health – Stripe Payment APIs",
+    "description": "Postman collection for Stripe payment integration. Set baseUrl and bearerToken variables before use.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000", "type": "string" },
+    { "key": "bearerToken", "value": "YOUR_JWT_TOKEN_HERE", "type": "string" },
+    { "key": "paymentIntentId", "value": "", "type": "string" },
+    { "key": "paymentId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Patient Panel",
+      "item": [
+        {
+          "name": "1. Create Payment Intent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data) {",
+                  "  pm.collectionVariables.set('paymentIntentId', res.data.paymentIntentId);",
+                  "  pm.collectionVariables.set('paymentId', res.data.paymentId);",
+                  "  console.log('clientSecret:', res.data.clientSecret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999,\n  \"currency\": \"usd\",\n  \"description\": \"Smart Health Premium Subscription\",\n  \"metadata\": { \"plan\": \"premium\" }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/payment/create-intent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "payment", "create-intent"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Payment intent created\",\n  \"data\": {\n    \"clientSecret\": \"pi_xxx_secret_xxx\",\n    \"paymentIntentId\": \"pi_xxx\",\n    \"paymentId\": \"64abc...\",\n    \"amount\": 999,\n    \"currency\": \"usd\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "2. Confirm Payment (Server-Driven)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentIntentId\": \"{{paymentIntentId}}\",\n  \"paymentMethodId\": \"pm_card_visa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/payment/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "payment", "confirm"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Payment confirmed\",\n  \"data\": {\n    \"status\": \"succeeded\",\n    \"paymentIntentId\": \"pi_xxx\",\n    \"payment\": { ... }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "3. Get Payment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/payment/history?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "payment", "history"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "succeeded", "disabled": true }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"data\": [...],\n  \"meta\": { \"total\": 5, \"page\": 1, \"limit\": 10, \"totalPages\": 1 }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4. Refund Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/patient/auth/payment/refund/{{paymentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "patient", "auth", "payment", "refund", "{{paymentId}}"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Payment refunded successfully\",\n  \"data\": {\n    \"refundId\": \"re_xxx\",\n    \"refundedAmount\": 999,\n    \"currency\": \"usd\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5. Stripe Webhook (Simulate)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "stripe-signature", "value": "t=...,v1=..." }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_xxx\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/stripe/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stripe", "webhook"]
+            }
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "body": "{ \"received\": true }"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin Panel",
+      "item": [
+        {
+          "name": "6. Get All Payments",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "succeeded", "disabled": true },
+                { "key": "startDate", "value": "2025-01-01", "disabled": true },
+                { "key": "endDate", "value": "2025-12-31", "disabled": true },
+                { "key": "search", "value": "pi_", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Get Payment By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/{{paymentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "{{paymentId}}"]
+            }
+          }
+        },
+        {
+          "name": "8. Export Payments CSV",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{bearerToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "export"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "dependencies": {
+    "@google-cloud/translate": "^8.5.1",
+    "@google-cloud/vision": "^5.3.4",
+    "@google/generative-ai": "^0.24.1",
+    "@sendgrid/mail": "^8.1.6",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-validator": "^7.3.1",
+    "firebase-admin": "^13.7.0",
+    "ioredis": "^5.8.2",
+    "json2csv": "^6.0.0-alpha.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
+    "mongoose": "^8.19.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.11",
+    "pdfkit": "^0.17.2",
+    "qrcode": "^1.5.4",
+    "stripe": "^21.0.1",
+    "tesseract.js": "^7.0.0",
+    "uuid": "^9.0.1",
+    "socket.io": "^4.8.1"
+  },
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/json2csv": "^5.0.7",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^18.19.130",
+    "@types/nodemailer": "^7.0.4",
+    "@types/pdfkit": "^0.17.4",
+    "@types/qrcode": "^1.5.6",
+    "@types/uuid": "^9.0.1",
+    "@types/socket.io": "^3.0.1",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

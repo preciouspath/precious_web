@@ -1,0 +1,64 @@
+:root {
+  --font-family:'AeonikRegular';
+  --light: 'AeonikLight';
+  --regular: 'AeonikRegular';
+  --medium: 'AeonikMedium';
+  --bold: 'AeonikBold';
+  --black:'AeonikBlack';
+}
+
+@font-face {
+  font-family: 'AeonikRegular';
+  src: url('../fonts/AeonikRegular.eot');
+  src: url('../fonts/AeonikRegular.eot') format('embedded-opentype'),
+       url('../fonts/AeonikRegular.woff2') format('woff2'),
+       url('../fonts/AeonikRegular.woff') format('woff'),
+       url('../fonts/AeonikRegular.ttf') format('truetype'),
+       url('../fonts/AeonikRegular.svg#AeonikRegular') format('svg');
+}
+
+@font-face {
+  font-family: 'AeonikLight';
+  src: url('../fonts/AeonikLight.eot');
+  src: url('../fonts/AeonikLight.eot') format('embedded-opentype'),
+       url('../fonts/AeonikLight.woff2') format('woff2'),
+       url('../fonts/AeonikLight.woff') format('woff'),
+       url('../fonts/AeonikLight.ttf') format('truetype'),
+       url('../fonts/AeonikLight.svg#AeonikLight') format('svg');
+}
+
+@font-face {
+  font-family: 'AeonikMedium';
+  src: url('../fonts/AeonikMedium.eot');
+  src: url('../fonts/AeonikMedium.eot') format('embedded-opentype'),
+       url('../fonts/AeonikMedium.woff2') format('woff2'),
+       url('../fonts/AeonikMedium.woff') format('woff'),
+       url('../fonts/AeonikMedium.ttf') format('truetype'),
+       url('../fonts/AeonikMedium.svg#AeonikMedium') format('svg');
+}
+
+@font-face {
+  font-family: 'AeonikBold';
+  src: url('../fonts/AeonikBold.eot');
+  src: url('../fonts/AeonikBold.eot') format('embedded-opentype'),
+       url('../fonts/AeonikBold.woff2') format('woff2'),
+       url('../fonts/AeonikBold.woff') format('woff'),
+       url('../fonts/AeonikBold.ttf') format('truetype'),
+       url('../fonts/AeonikBold.svg#AeonikBold') format('svg');
+}
+
+@font-face {
+  font-family: 'AeonikBlack';
+  src: url('../fonts/AeonikBlack.eot');
+  src: url('../fonts/AeonikBlack.eot') format('embedded-opentype'),
+       url('../fonts/AeonikBlack.woff2') format('woff2'),
+       url('../fonts/AeonikBlack.woff') format('woff'),
+       url('../fonts/AeonikBlack.ttf') format('truetype'),
+       url('../fonts/AeonikBlack.svg#AeonikBlack') format('svg');
+}
+
+.regular{font-family:var(--regular);}
+.medium{font-family: var(--medium) !important;}
+.bold{font-family: var(--bold) !important;}
+.light{font-family: var(--light) !important;}
+.black{font-family: var(--black) !important;}

@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Font Family Variables from Web Panel */
+    --font-family: 'AeonikRegular';
+    --light: 'AeonikLight';
+    --regular: 'AeonikRegular';
+    --medium: 'AeonikMedium';
+    --bold: 'AeonikBold';
+    --black: 'AeonikBlack';
+
+    /* Theme Colors from Web Panel */
+    --theme-color-primary-shade-50: #FBF7FD;
+    --theme-color-primary-shade-100: #F4ECFB;
+    --theme-color-primary-shade-200: #EBDDF7;
+    --theme-color-primary-shade-300: #DCC2F0;
+    --theme-color-primary-shade-400: #C69BE5;
+    --theme-color-primary-shade-500: #B074D8;
+    --theme-color-primary-shade-600: #9146C1;
+    --theme-color-primary-shade-700: #8543AD;
+    --theme-color-primary-shade-800: #6F3B8E;
+    --theme-color-primary-shade-900: #5B3172;
+    --theme-color-primary-shade-950: #3E1952;
+
+    --button-color: linear-gradient(90deg, #9146C1 0%, #5F1884 100%);
+
+    --color-slate-50: #F8FAFC;
+    --color-slate-100: #F1F5F9;
+    --color-slate-200: #E2E8F0;
+    --color-slate-300: #CAD5E2;
+    --color-slate-400: #90A1B9;
+    --color-slate-500: #62748E;
+    --color-slate-600: #45556C;
+    --color-slate-700: #314158;
+    --color-slate-800: #1D293D;
+    --color-slate-900: #0F172B;
+
+    --black-white-white: #FFFFFF;
+    --black-white-black: #222222;
+    --black-white-fix-white: #FFFFFF;
+    --black-white-fix-black: #222222;
+
+    /* Typography Sizes from Web Panel */
+    --headings-web-h1-headline: clamp(30px, 2.5vw + 22px, 52px);
+    --headings-web-h2-headline: clamp(28px, 2.2vw + 20px, 40px);
+    --headings-web-h3-headline: clamp(26px, 1.9vw + 18px, 32px);
+    --headings-web-h4-headline: clamp(24px, 1.6vw + 16px, 24px);
+    --headings-web-h5-headline: clamp(20px, 1.3vw + 14px, 20px);
+    --headings-web-h6-headline: clamp(16px, 1.1vw + 12px, 16px);
+
+    --body-text-body-1: 16px;
+    --body-text-body-2: 14px;
+    --body-text-body-3: 12px;
+}
+
+@layer base {
+    @font-face {
+        font-family: 'AeonikBold';
+        src: url('/fonts/Aeonik-Bold.otf') format('opentype');
+        font-weight: bold;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'AeonikMedium';
+        src: url('/fonts/Aeonik-Medium.otf') format('opentype');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'AeonikRegular';
+        src: url('/fonts/Aeonik-Regular.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    body {
+        font-family: 'AeonikRegular', sans-serif;
+        background-color: white;
+        color: #0F172B;
+        /* slate-900 */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 14px;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@layer components {
+
+    /* Typography Classes matching Web Panel exactly */
+    .headings-web-h1-headline {
+        font-size: var(--headings-web-h1-headline);
+        line-height: normal;
+        font-family: 'AeonikMedium';
+    }
+
+    .headings-web-h2-headline {
+        font-size: var(--headings-web-h2-headline);
+        line-height: normal;
+        font-family: 'AeonikMedium';
+    }
+
+    .headings-web-h3-headline {
+        font-size: var(--headings-web-h3-headline);
+        line-height: normal;
+        font-family: 'AeonikMedium';
+    }
+
+    .headings-web-h4-headline {
+        font-size: var(--headings-web-h4-headline);
+        line-height: normal;
+        font-family: 'AeonikBold';
+    }
+
+    .headings-web-h5-headline {
+        font-size: var(--headings-web-h5-headline);
+        line-height: normal;
+        font-family: 'AeonikMedium';
+    }
+
+    .headings-web-h6-headline {
+        font-size: var(--headings-web-h6-headline);
+        line-height: normal;
+        font-family: 'AeonikMedium';
+    }
+
+    .body-text-body-1 {
+        font-size: var(--body-text-body-1);
+        line-height: normal;
+        font-family: 'AeonikRegular';
+    }
+
+    .body-text-body-2 {
+        font-size: var(--body-text-body-2);
+        line-height: normal;
+        font-family: 'AeonikRegular';
+    }
+
+    .body-text-body-3 {
+        font-size: var(--body-text-body-3);
+        line-height: normal;
+        font-family: 'AeonikRegular';
+    }
+
+    /* Shared UI Elements */
+    .btn-medical {
+        height: 44px;
+        border-radius: 10px;
+        color: white;
+        font-size: 16px;
+        font-family: 'AeonikMedium';
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 24px;
+        cursor: pointer;
+        background: var(--button-color);
+        border: none;
+        transition: all 0.3s ease;
+        text-transform: capitalize;
+    }
+
+    .btn-medical:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .form-control {
+        width: 100%;
+        background-color: white;
+        color: #0F172B;
+        border-radius: 8px;
+        border: 1px solid #CAD5E2;
+        /* slate-300 */
+        outline: none;
+        height: 44px;
+        padding-left: 16px;
+        padding-right: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+    }
+
+    .form-control:focus {
+        border-color: #9146C1;
+        box-shadow: 0 0 0 2px rgba(145, 70, 193, 0.1);
+    }
+
+    .medical-card {
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #F1F5F9;
+        /* slate-100 */
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .form-error {
+        color: #dc2626 !important;
+        font-size: 12px;
+        font-family: 'AeonikMedium';
+        margin-top: 4px;
+        display: block;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #E2E8F0;
+    /* slate-200 */
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #CAD5E2;
+    /* slate-300 */
+}

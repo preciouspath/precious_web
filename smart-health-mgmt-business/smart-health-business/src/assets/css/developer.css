@@ -1,0 +1,48 @@
+/* Custom CSS for additional styles */
+
+/* Phone Input Styles */
+.phone-field-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 15px !important; /* Override default form-control padding to fix vertical alignment */
+}
+
+.phone-field-wrapper .PhoneInput {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.phone-field-wrapper input.PhoneInputInput {
+    flex: 1;
+    min-width: 0;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    height: 100% !important;
+    padding: 0 !important; /* Remove internal padding */
+    margin-left: 10px !important;
+    font-size: 14px !important;
+    font-family: 'AeonikRegular' !important;
+    color: #1e293b !important;
+}
+
+.phone-field-wrapper .PhoneInputCountry {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.phone-field-wrapper .PhoneInputCountryIcon {
+    width: 28px !important;
+    height: 20px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+/* Hide the default arrow if needed or style it */
+.phone-field-wrapper .PhoneInputCountrySelectArrow {
+    display: none;
+}

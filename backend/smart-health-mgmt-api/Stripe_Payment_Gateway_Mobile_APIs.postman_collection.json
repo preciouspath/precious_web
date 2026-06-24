@@ -1,0 +1,133 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+		"name": "Smart Health - Payment Gateway APIs",
+		"description": "APIs for Mobile App Developers to integrate Stripe payment gateway with coupon support.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Validate Coupon",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{patient_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"code\": \"SAVE20\",\n    \"planId\": \"premium\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/patient/auth/subscription/validate-coupon",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"patient",
+						"auth",
+						"subscription",
+						"validate-coupon"
+					]
+				},
+				"description": "Send the user's coupon code and the planId ('premium') to get the calculated discount, final payable amount, and discount type."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create Subscription Payment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{patient_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"planId\": \"premium\",\n    \"couponCode\": \"SAVE20\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/patient/auth/payment/create-subscription-payment",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"patient",
+						"auth",
+						"payment",
+						"create-subscription-payment"
+					]
+				},
+				"description": "Creates a Stripe Payment Intent. Pass the 'couponCode' only if coupon was applied. Returns 'clientSecret'. If 'requiresPayment' is false, it means the coupon made it 100% free and subscription is directly activated."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Verify Subscription Payment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{patient_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentIntentId\": \"pi_3PjKkL...\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/patient/auth/payment/verify-subscription-payment",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"patient",
+						"auth",
+						"payment",
+						"verify-subscription-payment"
+					]
+				},
+				"description": "Call this API AFTER the Stripe SDK on mobile confirms the payment successfully using the 'clientSecret'. Pass the paymentIntent ID to forcefully update the subscription status on the backend."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "patient_token",
+			"value": "YOUR_PATIENT_JWT_TOKEN",
+			"type": "string"
+		}
+	]
+}
